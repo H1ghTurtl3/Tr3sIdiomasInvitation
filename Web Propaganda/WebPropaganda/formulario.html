@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Unirse a la Hermandad del 3</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <canvas id="matrix-canvas"></canvas>
+    <div class="center-content">
+        <img src="assets/Morada.png" alt="Símbolo Hermandad del 3" class="hermandad-logo">
+        <img src="assets/Full Main - I Blancas.png" alt="Logo Tr3s Idiomas" class="podcast-logo">
+        <h2>Descifra el mensaje para unirte a la hermandad del 3:</h2>
+        <div id="binary-message" class="encrypted" style="user-select:all;cursor:pointer;">
+            01000101 01101100 00100000 01110001 01110101 01100101 00100000 01110011 01100101 00100000 01110000 01101001 01100011 01100001 00100000 01110000 01101001 01110000 01101001 00100000 01101101 01100001 01110011 01110100 01101001 01100011 01100001
+        </div>
+        <form id="contact-form" style="margin-top:2rem;">
+            <label>Nombre:<br><input type="text" name="nombre" required></label><br>
+            <label>Ig:<br><input type="text" name="ig" required></label><br>
+            <label>Mensaje cifrado:<br><input type="text" name="mensaje" required placeholder="Pega aquí el mensaje binario"></label><br>
+            <label>Por qué quieres ser parte de la hermandad?<br><input type="text" name="razon"></label><br>
+            <button type="submit">Enviar</button>
+        </form>
+    </div>
+    <script src="matrix.js"></script>
+    <script>
+    // Evita submit real
+    document.getElementById('contact-form').addEventListener('submit', function(e) {
+        e.preventDefault();
+        this.innerHTML = '<h2>¡Gracias! Pronto sabrás si eres digno de la Hermandad.</h2>';
+    });
+    </script>
+</body>
+</html>
