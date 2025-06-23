@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Unirse a la Hermandad del 3</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <canvas id="matrix-canvas"></canvas>
+    <div class="center-content">
+        <img src="assets/Morada.png" alt="Símbolo Hermandad del 3" class="hermandad-logo">
+        <img src="assets/Full Main - I Blancas.png" alt="Logo Tr3s Idiomas" class="podcast-logo">
+        <h2>Descifra el mensaje para unirte a la hermandad del 3:</h2>
+        <div id="binary-message" class="encrypted" style="user-select:all;cursor:pointer;">
+            01000101 01101100 00100000 01110001 01110101 01100101 00100000 01110011 01100101 00100000 01110000 01101001 01100011 01100001 00100000 01110000 01101001 01110000 01101001 00100000 01101101 01100001 01110011 01110100 01101001 01100011 01100001
+        </div>
+        <form id="contact-form" style="margin-top:2rem;">
+            <label>Nombre:<br><input type="text" name="nombre" required></label><br>
+            <label>Ig:<br><input type="text" name="ig" required></label><br>
+            <label>Mensaje cifrado:<br><input type="text" name="mensaje" required placeholder="Pega aquí el mensaje binario"></label><br>
+            <label>Por qué quieres ser parte de la hermandad?<br><input type="text" name="razon"></label><br>
+            <button type="submit">Enviar</button>
+        </form>
+        <div id="status-message" style="margin-top: 1rem; display: none;"></div>
+    </div>
+    <script src="matrix.js"></script>
+    <script>
+    // URL de webhook de n8n en Azure
+    const WEBHOOK_URL = 'https://n8n-db-bqajcxe8heh5h5c0.eastus2-01.azurewebsites.net/webhook/0968a8db-9a7a-4140-b4aa-20b3a40c11de';
+    
+    document.getElementById('contact-form').addEventListener('submit', async function(e) {
+        e.preventDefault();
+        
+        const statusDiv = document.getElementById('status-message');
+        const submitButton = this.querySelector('button[type="submit"]');
+        
+        // Deshabilitar botón mientras se envía
+        submitButton.disabled = true;
+        submitButton.textContent = 'Enviando...';
+        
+        // Recopilar datos del formulario
+        const formData = new FormData(this);
+        const data = {
+            nombre: formData.get('nombre'),
+            ig: formData.get('ig'),
+            mensaje: formData.get('mensaje'),
+            razon: formData.get('razon'),
+            timestamp: new Date().toISOString(),
+            user_agent: navigator.userAgent,
+            referrer: document.referrer || 'Direct'
+        };
+        
+        try {
+            const response = await fetch(WEBHOOK_URL, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(data)
+            });
+            
+            if (response.ok) {
+                // Éxito
+                statusDiv.style.display = 'block';
+                statusDiv.style.color = '#00ff00';
+                statusDiv.innerHTML = '<h2>¡Gracias! Pronto sabrás si eres digno de la Hermandad.</h2>';
+                this.style.display = 'none';
+            } else {
+                throw new Error(`Error HTTP: ${response.status}`);
+            }
+            
+        } catch (error) {
+            console.error('Error enviando datos:', error);
+            
+            // Mostrar error al usuario
+            statusDiv.style.display = 'block';
+            statusDiv.style.color = '#ff4444';
+            statusDiv.innerHTML = '<p>Error al enviar los datos. Por favor, intenta de nuevo.</p>';
+            
+            // Rehabilitar botón
+            submitButton.disabled = false;
+            submitButton.textContent = 'Enviar';
+        }
+    });
+    
+    // Función para copiar el mensaje binario al hacer clic
+    document.getElementById('binary-message').addEventListener('click', function() {
+        navigator.clipboard.writeText(this.textContent.trim()).then(() => {
+            const originalText = this.textContent;
+            this.textContent = '¡Copiado al portapapeles!';
+            setTimeout(() => {
+                this.textContent = originalText;
+            }, 2000);
+        }).catch(() => {
+            // Fallback para navegadores que no soportan clipboard API
+            const textarea = document.createElement('textarea');
+            textarea.value = this.textContent.trim();
+            document.body.appendChild(textarea);
+            textarea.select();
+            document.execCommand('copy');
+            document.body.removeChild(textarea);
+        });
+    });
+    </script>
+</body>
+</html>
